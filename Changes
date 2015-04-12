@@ -1,0 +1,6 @@
+Revision history for App-PerinciUtils
+
+0.01    2015-04-12 (PERLANCAR) (unreleased)
+
+        - First release, contains CLI scripts split from some other
+          distributions to reduce dependencies on those dists.
