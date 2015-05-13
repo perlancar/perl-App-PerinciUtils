@@ -164,7 +164,10 @@ _
 sub wrap_with_perinci_sub_wrapper {
     my %args = @_;
 
-    my $code = $args{code};
+    my $code;
+    if ($args{code}) {
+        $code = eval "sub { $args{code} }";
+    }
 
     my $meta;
     if (defined $args{meta}) {
