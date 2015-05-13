@@ -1,5 +1,10 @@
 Revision history for App-PerinciUtils
 
+0.02    2015-05-13 (PERLANCAR)
+
+        - Add utility: wrap-with-perinci-sub-wrapper.
+
+
 0.01    2015-04-12 (PERLANCAR)
 
         - First release, contains CLI scripts split from some other
