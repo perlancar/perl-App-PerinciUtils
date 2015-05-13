@@ -26,52 +26,51 @@ supplying `--code` and one of: `--args`, `--multiple-args`, `--args-file`, or
 `--multiple-args-file`.
 
 _
-    args_rels => <<'_',
-req_one: meta, url
-
-choose_one: #arg
-
-_
-    ],
+    args_rels => {
+        'req_one&' => [
+            [qw/meta url/],
+        ],
+        # XXX code is not required if user uses url
+        'choose_one&' => [
+            [qw/args args_file multiple_args multiple_args_file/],
+        ],
+        # XXX: args, multiple_args, args_file, multiple_args_file only required if none of
+        #'req_dep_any&' => [
+        #    [],
+        #],
+    },
     args => {
+        meta => {
+            summary => 'Specify function metadata',
+            schema => 'hash*',
+            pos => 0,
+            tags => ['category:meta-specification'],
+        },
+        url => {
+            schema => 'str*',
+            summary => 'Use function metadata from Riap URL',
+            tags => ['category:meta-specification'],
+        },
+        # meta_file?
         code => {
-            summary => 'Specify
-            schema=>'str*',
-            tags => ['category:input'],
-        },
-        schema_file => {
-            schema=>'str*',
-            summary => 'Retrieve schema from file',
-            description => <<'_',
-
-JSON and YAML formats are supported. File type will be guessed from filename,
-defaults to JSON.
-
-_
-            cmdline_aliases => {f=>{}},
-            'x.schema.entity' => 'filename',
-            tags => ['category:schema-specification'],
-        },
-        schema_file_type => {
-            schema=>['str*', in=>[qw/json yaml/]],
-            summary => 'Give hint for schema file type',
-            cmdline_aliases => {t=>{}},
-            tags => ['category:schema-specification'],
+            summary => 'Specify Perl code to wrap',
+            schema => 'str*',
+            tags => ['category:code-specification'],
         },
 
-        data => {
-            schema => ['any'],
+        args => {
+            schema => ['hash*'],
             pos => 1,
-            tags => ['category:data-specification'],
+            tags => ['category:argument-specification'],
         },
-        multiple_data => {
-            summary => 'Validate multiple data (array of data) against schema',
+        multiple_args => {
+            summary => 'Call with multiple args (array of args)',
             schema => ['array*', of=>'any'],
-            tags => ['category:data-specification'],
+            tags => ['category:argument-specification'],
         },
-        data_file => {
-            schema=>'str*',
-            summary => 'Retrieve data from file',
+        args_file => {
+            schema => 'str*',
+            summary => 'Retrieve args from file',
             description => <<'_',
 
 JSON and YAML formats are supported. File type will be guessed from filename,
@@ -79,232 +78,176 @@ defaults to JSON.
 
 _
             'x.schema.entity' => 'filename',
-            tags => ['category:data-specification'],
+            tags => ['category:argument-specification'],
         },
-        multiple_data_file => {
-            schema=>'str*',
-            summary => 'Retrieve multiple data from file',
+        multiple_args_file => {
+            schema => 'str*',
+            summary => 'Retrieve multiple args from file',
             description => <<'_',
 
-This is like `data_file` except that for multiple data. Data must be an array.
+This is like `args_file` except that for multiple args. Content must be an
+array.
 
 _
             'x.schema.entity' => 'filename',
-            tags => ['category:data-specification'],
+            tags => ['category:argument-specification'],
         },
-        data_file_type => {
-            schema=>['str*', in=>[qw/json yaml/]],
-            summary => 'Give hint for data file type',
-            tags => ['category:data-specification'],
+        args_file_type => {
+            schema => ['str*', in=>[qw/json yaml/]],
+            summary => 'Give hint for args file type',
+            tags => ['category:argument-specification'],
         },
 
-        return_type => {
-            schema=>['str*', in=>[qw/bool str full/]],
-            default=>'str',
-            cmdline_aliases => {r=>{}},
-            tags => ['category:validator-specification'],
+        wrap => {
+            schema => ['bool*', is=>1],
+            default => 1,
+            tags => ['category:wrapping'],
         },
-        show_schema => {
-            summary => "Don't validate data, show normalized schema only",
-            schema=>['bool', is=>1],
-            cmdline_aliases => {s=>{}},
+
+        show_meta => {
+            summary => "Don't call sub or wrap, show normalized metadata (before wrapping) only",
+            schema => ['bool', is=>1],
             tags => ['category:action-selection'],
         },
-        show_raw_compile => {
-            summary => "Don't validate data, show raw compilation result only",
-            schema=>['bool', is=>1],
+        show_wrap_meta => {
+            summary => "Don't call sub, show generated metadata after wrapping only",
+            schema => ['bool', is=>1],
             tags => ['category:action-selection'],
         },
-        show_code => {
-            summary => "Don't validate data, show generated validator code only",
-            schema=>['bool', is=>1],
+        show_wrap_code => {
+            summary => "Don't call sub, show generated wrapper code only",
+            schema => ['bool', is=>1],
             cmdline_aliases => {c=>{}},
             tags => ['category:action-selection'],
         },
-        data_with_result => {
-            summary => "Show data alongside with validation result",
+        args_with_result => {
+            summary => "Show args alongside with call result",
             description => <<'_',
 
-The default is to show the validation result only.
+The default is to show the call result only.
 
 _
-            schema=>['bool', is=>1],
+            schema => ['bool', is=>1],
             cmdline_aliases => {d=>{}},
             tags => ['category:output'],
         },
         with_debug => {
-            summary => 'Generate validator with debug on',
+            summary => 'Generate wrapper with debug on',
             description => <<'_',
 
-This means e.g. to pepper the validator code with logging statements.
+This means e.g. to pepper the wrapper code with more comments.
 
 _
             schema => ['bool', is=>1],
-            tags => ['category:validator-specification'],
+            tags => ['category:wrapping'],
         },
-        pp => {
-            summary => 'Generate Perl validator that avoids the use of XS module',
-            schema => ['bool', is=>1],
-            tags => ['category:validator-specification'],
-            # XXX only relevant when compiler=perl
+        validate_args => {
+            schema => ['bool'],
+            default => 1,
+            tags => ['category:wrapping'],
         },
-        compiler => {
-            summary => "Select compiler",
-            schema=>['str*', in=>[qw/perl js/]],
-            default => 'perl',
-            cmdline_aliases => {C=>{}},
-            tags => ['category:validator-specification'],
+        validate_result => {
+            schema => ['bool'],
+            default => 1,
+            tags => ['category:wrapping'],
         },
         linenum => {
-            summary => 'When showing source code, add line numbers',
-            schema=>['bool', is=>1],
+            summary => 'When showing source code (--show-wrap-code), add line numbers',
+            schema => ['bool', is=>1],
             cmdline_aliases => {l=>{}},
             tags => ['category:output'],
         },
     },
     examples => [
-        {
-            src => q([[prog]] 'int*' 42),
-            src_plang => 'bash',
-            summary => 'Should succeed and return empty string',
-        },
-        {
-            src => q([[prog]] 'int*' '"x"'),
-            src_plang => 'bash',
-            summary => 'Should show an error message because "x" is not int',
-        },
-        {
-            src => q([[prog]] '["int","min",1,"max",10]' --multiple-data-json '[-4,7,15]' --return-type bool),
-            src_plang => 'bash',
-            summary => 'Validate multiple data, should return 0, 1, 0',
-        },
-        {
-            src => q([[prog]] '["int","min",1,"max",10]' --multiple-data-json '[-4,7,15]' -d),
-            src_plang => 'bash',
-            summary => 'Show data alongside with result, in a table',
-        },
-        {
-            src => q([[prog]] '["int","min",1,"max",10]' -c -l),
-            src_plang => 'bash',
-            summary => 'Show validator Perl code only, with line number',
-        },
-        {
-            src => q([[prog]] '["int","min",1,"max",10]' -C js -c -l),
-            src_plang => 'bash',
-            summary => 'Show validator JS code only, with line number',
-        },
-        {
-            src => q{[[prog]] -f schema1.json '["data"]'},
-            src_plang => 'bash',
-            summary => 'Load schema from file',
-        },
-        {
-            src => q{[[prog]] -f schema1.json --multiple-data-file datafile --data-file-type json},
-            src_plang => 'bash',
-            summary => 'Load schema and data from file',
-        },
     ],
 };
-sub validate_with_sah {
+sub wrap_with_perinci_sub_wrapper {
     my %args = @_;
 
-    my $schema;
-    if (defined $args{schema}) {
-        return [400, "Please specify either 'schema' or 'schema_file', not both"] if defined($args{schema_file});
-        $schema = $args{schema};
-    } elsif (defined $args{schema_file}) {
-        my $path = $args{schema_file};
-        my $type = $args{schema_file_type};
-        if (!$type) {
-            if ($path =~ /\b(json)$/i) { $type = 'json' }
-            elsif ($path =~ /\b(yaml|yml)$/i) { $type = 'yaml' }
-            else { $type = 'json' }
+    my $code = $args{code};
+
+    my $meta;
+    if (defined $args{meta}) {
+        $meta = $args{meta};
+    } elsif (defined $args{url}) {
+        require Perinci::Access;
+        my $pa = Perinci::Access->new;
+        my $res = $pa->request(meta => $args{url});
+        return $res unless $res->[0] == 200;
+        $meta = $res->[2];
+
+        if (!$code &&
+                $args{url} =~ m!^(?:pl:)?/((?:[^/]+)(?:/[^/]+)*)/([^/]+)!) {
+            no strict 'refs';
+            my ($mod, $func) = ($1, $2);
+            require "$mod.pm";
+            $mod =~ s!/!::!g;
+            $code //= \&{"$mod\::$func"};
         }
-        if ($type eq 'json') {
-            require File::Slurper;
-            require JSON;
-            my $ct = File::Slurper::read_text($path);
-            $schema = JSON->new->allow_nonref->decode($ct);
-        } elsif ($type eq 'yaml') {
-            require YAML::XS;
-            $schema = YAML::XS::LoadFile($path);
-        } else {
-            return [400, "Unknown schema file type '$type', please specify json/yaml"];
-        }
-    } else {
-        return [400, "Please specify 'schema' or 'schema_file'"];
     }
 
-    if ($args{show_schema}) {
-        require Data::Sah::Normalize;
-        return [200, "OK", Data::Sah::Normalize::normalize_schema($schema)];
+    if ($args{show_meta}) {
+        require Perinci::Sub::Normalize;
+        return [200, "OK",
+                Perinci::Sub::Normalize::normalize_function_metadata($meta)];
     }
 
-    my $func;
-    my $obj;
+  WRAP:
     {
-        no strict 'refs';
-        my $c = $args{compiler};
-        if ($c eq 'perl') {
-            require Data::Sah;
-            if ($args{show_raw_compile}) {
-                $obj = Data::Sah->new->get_compiler('perl');
-            } else {
-                $func = \&{"Data::Sah::gen_validator"};
-            }
-        } elsif ($c eq 'js') {
-            if ($args{show_raw_compile}) {
-                $obj = Data::Sah->new->get_compiler('perl');
-            } else {
-                require Data::Sah::JS;
-                $func = \&{"Data::Sah::JS::gen_validator"};
-            }
-        } else {
-            return [400, "Unknown compiler '$c', please specify perl/js"];
+        last unless $args{wrap};
+        require Perinci::Sub::Wrapper;
+
+        my %wrap_opts;
+        {
+            $wrap_opts{validate_args}   = $args{validate_args};
+            $wrap_opts{validate_result} = $args{validate_result};
+            $wrap_opts{debug}           = $args{with_debug};
+            $wrap_opts{compile}         = 0 if $args{show_wrap_code};
+            $wrap_opts{meta}            = $meta;
+            $wrap_opts{sub}             = $code // sub {[200]};
         }
-    }
 
-    my %gen_opts;
-    {
-        $gen_opts{source} = 1 if $args{show_code};
-        $gen_opts{return_type} = $args{return_type};
-        $gen_opts{debug} = 1 if $args{with_debug};
-        $gen_opts{pp} = 1 if $args{pp};
-    }
+        my $res = Perinci::Sub::Wrapper::wrap_sub(%wrap_opts);
 
-    if ($args{show_raw_compile}) {
-        require Data::Dump;
-        my $cd = $obj->compile(%gen_opts, schema=>$schema);
-        return [200, "OK", Data::Dump::dump($cd), {'cmdline.skip_format'=>1}];
-    }
+        return $res unless $res->[0] == 200;
 
-    my $v = $func->($schema, \%gen_opts);
+        $meta = $res->[2]{meta};
 
-    if ($args{show_code}) {
-        $v .= "\n" unless $v =~ /\R\z/;
-        if ($args{linenum}) {
-            require String::LineNumber;
-            $v = String::LineNumber::linenum($v);
+        if ($args{show_wrap_meta}) {
+            require Data::Dump;
+            return [200, "OK", Data::Dump::dump($meta),
+                    {'cmdline.skip_format'=>1}];
         }
-        return [200, "OK", $v, {'cmdline.skip_format'=>1}];
+
+        if ($args{show_wrap_code}) {
+            my $source = $res->[2]{source};
+            $source .= "\n" unless $source =~ /\R\z/;
+            if ($args{linenum}) {
+                require String::LineNumber;
+                $source = String::LineNumber::linenum($source);
+            }
+            return [200, "OK", $source, {'cmdline.skip_format'=>1}];
+        }
+
+        $code = $res->[2]{sub};
     }
 
-    my $data;
+    my $args;
     my $multiple;
-    if (exists $args{data}) {
-        $data = $args{data};
-    } elsif ($args{multiple_data}) {
-        $data = $args{multiple_data};
+    if (exists $args{args}) {
+        $args = $args{args};
+    } elsif ($args{multiple_args}) {
+        $args = $args{multiple_args};
         $multiple = 1;
-    } elsif (defined($args{data_file}) || defined($args{multiple_data_file})) {
+    } elsif (defined($args{args_file}) || defined($args{multiple_args_file})) {
         my $path;
-        if (defined $args{data_file}) {
-            $path = $args{data_file};
+        if (defined $args{args_file}) {
+            $path = $args{args_file};
         } else {
-            $path = $args{multiple_data_file};
+            $path = $args{multiple_args_file};
             $multiple = 1;
         }
-        my $type = $args{data_file_type};
+        my $type = $args{args_file_type};
         if (!$type) {
             if ($path =~ /\b(json)$/i) { $type = 'json' }
             elsif ($path =~ /\b(yaml|yml)$/i) { $type = 'yaml' }
@@ -314,31 +257,33 @@ sub validate_with_sah {
             require File::Slurper;
             require JSON;
             my $ct = File::Slurper::read_text($path);
-            $data = JSON->new->allow_nonref->decode($ct);
+            $args = JSON->new->allow_nonref->decode($ct);
         } elsif ($type eq 'yaml') {
             require YAML::XS;
-            $data = YAML::XS::LoadFile($path);
+            $args = YAML::XS::LoadFile($path);
         } else {
-            return [400, "Unknown data file type '$type', please specify json/yaml"];
+            return [400, "Unknown args file type '$type', please specify json/yaml"];
         }
     } else {
-        return [400, "Please specify 'data' or 'multiple_data' or 'data_file' or 'multiple_data_file'"];
+        return [400, "Please specify 'args' or 'multiple_args' or 'args_file' or 'multiple_args_file'"];
     }
     if ($multiple) {
-        return [400, "Multiple data must be an array"] unless ref($data) eq 'ARRAY';
+        return [400, "Multiple args must be an array"] unless ref($args) eq 'ARRAY';
+    } else {
+        return [400, "args must be a hash"] unless ref($args) eq 'HASH';
     }
 
     if ($multiple) {
-        if ($args{data_with_result}) {
-            return [200, "OK", [map {{data=>$_, result=>$v->($_)}} @$data]];
+        if ($args{args_with_result}) {
+            return [200, "OK", [map {{args=>%$_, result=>$code->($_)}} @$args]];
         } else {
-            return [200, "OK", [map {$v->($_)} @$data]];
+            return [200, "OK", [map {$code->(%$_)} @$args]];
         }
     } else {
-        if ($args{data_with_result}) {
-            return [200, "OK", {data=>$data, result=>$v->($data)}];
+        if ($args{args_with_result}) {
+            return [200, "OK", {args=>$args, result=>$code->(%$args)}];
         } else {
-            return [200, "OK", $v->($data)];
+            return [200, "OK", $code->(%$args)];
         }
     }
 
@@ -346,7 +291,7 @@ sub validate_with_sah {
 }
 
 my $cli = Perinci::CmdLine::Any->new(
-    url => '/main/validate_with_sah',
+    url => '/main/wrap_with_perinci_sub_wrapper',
 );
 $cli->{common_opts}{naked_res}{default} = 1;
 $cli->run;
