@@ -1,5 +1,11 @@
 Revision history for App-PerinciUtils
 
+0.04    2015-05-23 (PERLANCAR)
+
+	- wrap-with-perinci-sub-wrapper: Add options --core, --core-or-pp,
+	  --pp.
+
+
 0.03    2015-05-13 (PERLANCAR)
 
 	- [Bugfix] Forgot to set code from cmdline argument.
