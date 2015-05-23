@@ -151,6 +151,27 @@ _
             default => 1,
             tags => ['category:wrapping'],
         },
+        core => {
+            summary => 'Whether to generate code which avoids the use of non-core modules',
+            schema => ['bool'],
+            tags => ['category:wrapping'],
+        },
+        core_or_pp => {
+            summary => 'Whether to generate code which avoids the use of non-core XS modules',
+            schema => ['bool'],
+            description => <<'_',
+
+In other words, generated code should stick with core or pure-perl modules.
+
+_
+            tags => ['category:wrapping'],
+        },
+        pp => {
+            summary => 'Whether to generate code which avoids the use of XS modules',
+            schema => ['bool'],
+            tags => ['category:wrapping'],
+        },
+
         linenum => {
             summary => 'When showing source code (--show-wrap-code), add line numbers',
             schema => ['bool', is=>1],
@@ -208,6 +229,9 @@ sub wrap_with_perinci_sub_wrapper {
             $wrap_opts{compile}         = 0 if $args{show_wrap_code};
             $wrap_opts{meta}            = $meta;
             $wrap_opts{sub}             = $code // sub {[200]};
+            $wrap_opts{core}            = 1 if $args{core};
+            $wrap_opts{core_or_pp}      = 1 if $args{core_or_pp};
+            $wrap_opts{pp}              = 1 if $args{pp};
         }
 
         my $res = Perinci::Sub::Wrapper::wrap_sub(%wrap_opts);
