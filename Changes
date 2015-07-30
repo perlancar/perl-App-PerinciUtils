@@ -1,5 +1,12 @@
 Revision history for App-PerinciUtils
 
+0.05    2015-07-30 (PERLANCAR)
+
+	- No functional changes.
+
+	- Mention App::PericmdUtils.
+
+
 0.04    2015-05-23 (PERLANCAR)
 
 	- wrap-with-perinci-sub-wrapper: Add options --core, --core-or-pp,
