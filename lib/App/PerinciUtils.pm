@@ -20,4 +20,6 @@ family.
 
 L<Perinci>
 
+L<App::PericmdUtils> - utilities related to Perinci::CmdLine modules family.
+
 =cut
