@@ -282,9 +282,9 @@ sub wrap_with_perinci_sub_wrapper {
         }
         if ($type eq 'json') {
             require File::Slurper;
-            require JSON;
+            require JSON::MaybeXS;
             my $ct = File::Slurper::read_text($path);
-            $args = JSON->new->allow_nonref->decode($ct);
+            $args = JSON::MaybeXS->new->allow_nonref->decode($ct);
         } elsif ($type eq 'yaml') {
             require YAML::XS;
             $args = YAML::XS::LoadFile($path);
