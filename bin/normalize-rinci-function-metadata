@@ -1,5 +1,8 @@
 #!perl
 
+# DATE
+# VERSION
+
 use Data::Dump::Color;
 
 @ARGV == 1 or die "Usage: $0 <metadata-in-perl-code>\n";
@@ -10,3 +13,18 @@ require Perinci::Sub::Wrapper;
 my $res = Perinci::Sub::Wrapper::wrap_sub(sub=>sub{}, meta=>$meta, compile=>0);
 die "Can't wrap: $res->[0] - $res->[1]" unless $res->[0] == 200;
 dd $res->[2]{meta};
+
+# ABSTRACT: Normalize Rinci function metadata
+# PODNAME:
+
+=head1 SYNOPSIS
+
+ % normalize-rinci-function-metadata '{v=>1.1, args=>{a=>{schema=>"int"}}}'
+ {
+   "args" => { a => { schema => ["int", {}, {}] } }, # {0}
+   "args_as" => "hash",                              # {1}
+   "v" => 1.1,                                       # {2}
+   "x.perinci.sub.wrapper.logs" => [
+     { normalize_schema => "1", validate_args => 1, validate_result => 1 }, # .[0]
+   ],                                                # {3}
+ }
