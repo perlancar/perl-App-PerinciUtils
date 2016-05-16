@@ -28,3 +28,9 @@ dd $res->[2]{meta};
      { normalize_schema => "1", validate_args => 1, validate_result => 1 }, # .[0]
    ],                                                # {3}
  }
+
+
+=head1 DESCRIPTION
+
+This script can be used to quickly view the normalized form of a L<Rinci>
+function metadata.
