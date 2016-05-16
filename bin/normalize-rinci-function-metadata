@@ -33,4 +33,4 @@ dd $res->[2]{meta};
 =head1 DESCRIPTION
 
 This script can be used to quickly view the normalized form of a L<Rinci>
-function metadata.
+function metadata. Both input and output are in the form of Perl code.
