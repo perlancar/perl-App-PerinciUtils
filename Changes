@@ -1,5 +1,13 @@
 Revision history for App-PerinciUtils
 
+0.09    2016-05-17 (PERLANCAR)
+
+        - No functional changes.
+
+        - Tweak documentation (add description to script, mention related
+          scripts).
+
+
 0.08    2016-05-14 (PERLANCAR)
 
 	- Add script: normalize-rinci-function-metadata.
