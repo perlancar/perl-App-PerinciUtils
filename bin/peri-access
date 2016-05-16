@@ -128,4 +128,9 @@ From command-line:
 
 This script is a command-line interface for L<Perinci::Access>.
 
+
+=head1 SEE ALSO
+
+L<riap> (from L<App::riap> distribution), a riap CLI shell.
+
 =cut
