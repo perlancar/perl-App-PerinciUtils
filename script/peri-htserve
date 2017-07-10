@@ -6,7 +6,7 @@
 use 5.010;
 use strict;
 use warnings;
-use Log::Any::IfLOG qw($log);
+use Log::ger;
 
 # early loading to avoid target module being loaded before the patch
 use Perinci::Access::Base::Patch::PeriAHS;
@@ -76,7 +76,7 @@ _
                 $args->{-packages} //= [];
 
                 if ($val =~ /(.+::)\*$/) {
-                    $log->debugf('Listing all modules in %s ...', $val);
+                    log_debug('Listing all modules in %s ...', $val);
                     my $res = list_modules($1, {list_modules=>1});
                     push @{ $args->{-modules}  }, sort keys %$res;
                 } elsif ($val =~ s/^\+//) {
@@ -255,14 +255,14 @@ sub serve {
 
     my $server = $args{server} // 'Gepok';
     #$log->tracef("TMP: modules/packages: %s", $args{module_or_package});
-    $log->infof("Starting server (using %s) ...", $server);
+    log_info("Starting server (using %s) ...", $server);
 
     my $riap_access_log_path = $args{riap_access_log_path} //
         File::HomeDir->my_home . "/peri-htserve-riap_access.log";
 
-    $log->debugf("Modules to load: %s", $args{-modules});
+    log_debug("Modules to load: %s", $args{-modules});
     for my $m (@{$args{-modules}}) {
-        $log->infof("Loading module %s ...", $m);
+        log_info("Loading module %s ...", $m);
         eval { load $m };
         return [500, "Failed to load module $m: $@"] if $@;
         gen_meta_for_module(module=>$m, load=>0);
