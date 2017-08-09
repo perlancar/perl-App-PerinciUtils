@@ -28,6 +28,7 @@ _
             pos => 0,
         },
     },
+    'cmdline.default_format' => 'perl',
 };
 sub app {
     my %args = @_;
