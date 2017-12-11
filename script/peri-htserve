@@ -303,7 +303,7 @@ sub serve {
         load $class;
         $pa = $class->new(
             load => 0,
-            allow_paths => [map {s!::!/!g; "/$_"} @pkgs],
+            allow_paths => [map {my $tmp = $_; $tmp =~ s!::!/!g; "/$tmp"} @pkgs],
             %extra_opts,
         );
     }
