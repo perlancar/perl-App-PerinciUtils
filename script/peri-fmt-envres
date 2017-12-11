@@ -1,0 +1,78 @@
+#!perl
+
+# DATE
+# VERSION
+
+use 5.010001;
+use strict;
+use warnings;
+
+use Getopt::Long;
+
+my %opts = (
+    format => "text",
+);
+
+GetOptions(
+    "format|f=s" => \$opts{format},
+    "help|h|?" => sub {
+        print <<'_';
+Usage:
+  % peri-fmt-envres [opts] <filename>
+  % peri-fmt-envres --help (or -h, -?)
+  % peri-fmt-envres --version (or -v)
+
+Options:
+  --format=s, -f
+
+See manpage for more information.
+_
+        exit 0;
+    },
+    "version|v" => sub {
+        print "peri-fmt-envres version ", ($main::VERSION // "dev"), "\n";
+        exit 0;
+    },
+);
+
+require JSON::MaybeXS;
+my $json = JSON::MaybeXS->new;
+
+my $content = join "", <>;
+
+my $res = $json->decode($content);
+
+require Perinci::Result::Format::Lite;
+print Perinci::Result::Format::Lite::format($res, $opts{format});
+
+#ABSTRACT: Format enveloped result in a JSON file using Perinci::Result::Format::Lite
+#PODNAME:
+
+=head1 SYNOPSIS
+
+  % peri-fmt-envres [opts] <filename>
+  % peri-fmt-envres --help (or -h, -?)
+  % peri-fmt-envres --version (or -v)
+
+Examples:
+
+ % peri-fmt-envres output.json
+ % peri-fmt-envres -f html output.json
+
+
+=head1 OPTIONS
+
+=head2 --format=s, -f
+
+=head2 --help, -h, -?
+
+=head2 --version, -v
+
+
+=head1 SEE ALSO
+
+L<Perinci::Result::Format::Lite>
+
+L<Perinci::Result::Format>
+
+=cut
