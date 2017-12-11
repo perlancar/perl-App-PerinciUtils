@@ -1,0 +1,70 @@
+#!perl
+
+# DATE
+# VERSION
+
+use strict;
+use warnings;
+
+use Perinci::Access;
+use Perinci::CmdLine::Any;
+use Perinci::Sub::GetArgs::Argv qw(gen_getopt_long_spec_from_meta);
+
+our %SPEC;
+
+$SPEC{app} = {
+    v => 1.1,
+    summary => "Generate Getopt::Long spec from Riap function meta",
+    description => <<'_',
+
+This is a CLI for <pm:Perinci::Sub::GetArgs::Argv>'s
+`gen_getopt_long_spec_from_meta` function.
+
+_
+    args => {
+        url => {
+            schema => 'riap::url*',
+            req => 1,
+            pos => 0,
+        },
+    },
+    'cmdline.default_format' => 'perl',
+};
+sub app {
+    my %args = @_;
+
+    my $pa = Perinci::Access->new;
+    my $res = $pa->request(meta => $args{url});
+    return [500, "Can't get meta: $res->[0] - $res->[1]"]
+        unless $res->[0] == 200;
+
+    my $meta = $res->[2];
+
+    $res = gen_getopt_long_spec_from_meta(
+        meta => $meta, meta_is_normalized => 1,
+        common_opts => {
+            format => {
+                getopt => 'format=s',
+            },
+            naked_res => {
+                getopt => 'naked-res!',
+            },
+            help => {
+                getopt => 'help|h|?',
+            },
+        },
+        per_arg_json => 1,
+        per_arg_yaml => 1,
+    );
+    return [500, "Can't gen_getopt_long_spec_from_meta: $res->[0] - $res->[1]"]
+        unless $res->[0] == 200;
+
+    $res;
+}
+
+Perinci::CmdLine::Any->new(
+    url => '/main/app',
+)->run;
+
+# ABSTRACT:
+# PODNAME:
