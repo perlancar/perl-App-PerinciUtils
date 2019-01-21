@@ -1,0 +1,44 @@
+#!perl
+
+# DATE
+# VERSION
+
+use 5.010001;
+use strict;
+use warnings;
+
+use Perinci::CmdLine::Any;
+
+our %SPEC;
+
+$SPEC{app} = {
+    v => 1.1,
+    summary => "List Perinci::Sub::XCompletion::* modules",
+    args => {
+    },
+};
+sub app {
+    require PERLANCAR::Module::List;
+    my %args = @_;
+
+    my $mods = PERLANCAR::Module::List::list_modules(
+        'Perinci::Sub::XCompletion::',
+        {list_modules => 1});
+    my @rows;
+    for (sort keys %$mods) {
+        s/\APerinci::Sub::XCompletion:://;
+        push @rows, $_;
+    }
+    [200, "OK", \@rows];
+}
+
+Perinci::CmdLine::Any->new(
+    url => '/main/app',
+)->run;
+
+# ABSTRACT:
+# PODNAME:
+
+=head1 SEE ALSO
+
+L<testxcomp>
