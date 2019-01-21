@@ -32,6 +32,18 @@ GetOptions(
     },
     'arg=s%'  => \%args,
     'raw' => \$Opts{raw},
+    'list|l' => sub {
+        require PERLANCAR::Module::List;
+
+        my $mods = PERLANCAR::Module::List::list_modules(
+            'Perinci::Sub::XCompletion::',
+            {list_modules => 1});
+        for (sort keys %$mods) {
+            s/\APerinci::Sub::XCompletion:://;
+            say;
+        }
+        exit 0;
+    },
 );
 
 @ARGV or die "testxcomp: Please specify name of x.completion routine\n";
@@ -81,9 +93,15 @@ Specify arguments to pass to completion routine.
 Instead of formatting the completion answer using L<Complete::Bash>'s
 C<format_completion>, display the answer structure as Perl.
 
+=head2 --list, -l
+
+List all C<Perinci::Sub::XCompletion::*> modules installed on the system.
+
 
 =head1 SEE ALSO
 
 L<Perinci::Sub::XCompletion>
+
+L<list-perinci-sub-x-completion-modules>
 
 =cut
