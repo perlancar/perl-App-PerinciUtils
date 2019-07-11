@@ -1,26 +1,26 @@
-0.112   2019-01-20 (PERLANCAR)
+0.112   2019-01-20  Released-By: PERLANCAR
 
 	- Add utility: testxcomp.
 
 
-0.111   2017-12-11 (PERLANCAR)
+0.111   2017-12-11  Released-By: PERLANCAR
 
 	- Add utility: peri-fmt-envres.
 
 
-0.110   2017-08-09 (PERLANCAR)
+0.110   2017-08-09  Released-By: PERLANCAR
 
 	- Add script: gen-getopt-long-spec-from-meta.
 
 
-0.10    2017-07-10 (PERLANCAR)
+0.10    2017-07-10  Released-By: PERLANCAR
 
 	- No functional changes.
 
 	- Replace Log::Any with Log::ger.
 
 
-0.09    2016-05-17 (PERLANCAR)
+0.09    2016-05-17  Released-By: PERLANCAR
 
         - No functional changes.
 
@@ -28,17 +28,17 @@
           scripts).
 
 
-0.08    2016-05-14 (PERLANCAR)
+0.08    2016-05-14  Released-By: PERLANCAR
 
 	- Add script: normalize-rinci-function-metadata.
 
 
-0.07    2016-03-10 (PERLANCAR)
+0.07    2016-03-10  Released-By: PERLANCAR
 
 	- Replace JSON with JSON::MaybeXS.
 
 
-0.06    2015-09-03 (PERLANCAR)
+0.06    2015-09-03  Released-By: PERLANCAR
 
 	- No functional changes.
 
@@ -47,30 +47,30 @@
 	  requirement.
 
 
-0.05    2015-07-30 (PERLANCAR)
+0.05    2015-07-30  Released-By: PERLANCAR
 
 	- No functional changes.
 
 	- Mention App::PericmdUtils.
 
 
-0.04    2015-05-23 (PERLANCAR)
+0.04    2015-05-23  Released-By: PERLANCAR
 
 	- wrap-with-perinci-sub-wrapper: Add options --core, --core-or-pp,
 	  --pp.
 
 
-0.03    2015-05-13 (PERLANCAR)
+0.03    2015-05-13  Released-By: PERLANCAR
 
 	- [Bugfix] Forgot to set code from cmdline argument.
 
 
-0.02    2015-05-13 (PERLANCAR)
+0.02    2015-05-13  Released-By: PERLANCAR
 
         - Add utility: wrap-with-perinci-sub-wrapper.
 
 
-0.01    2015-04-12 (PERLANCAR)
+0.01    2015-04-12  Released-By: PERLANCAR
 
         - First release, contains CLI scripts split from some other
           distributions to reduce dependencies on those dists.
